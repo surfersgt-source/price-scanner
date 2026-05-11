@@ -16,6 +16,10 @@ const context = canvas.getContext('2d');
 
 let stream = null;
 
+// !!! ВАЖНО: Установите ваш токен API здесь !!!
+// Если puter.ai не принимает токен через аргументы, эта переменная будет проигнорирована.
+const PUTER_AI_TOKEN = "ВАШ_СЕКРЕТНЫЙ_ТОКЕН_API";
+
 // --- Инициализация Камеры ---
 
 async function startCamera() {
@@ -42,8 +46,8 @@ async function startCamera() {
         errorMessage.textContent = "Ошибка доступа к камере. Убедитесь, что разрешили доступ в браузере и что вы используете устройство с камерой.";
         errorMessage.style.display = 'block';
 
-        // Если камера не заработала, оставляем кнопку видимой, но неактивной
-        captureButton.style.display = 'block';
+        // Если камера не заработала, скрываем кнопку и делаем ее неактивной
+        captureButton.style.display = 'none';
         captureButton.disabled = true;
     }
 }
@@ -88,8 +92,22 @@ async function processImage(imageDataURL) {
             throw new Error("Библиотека puter.ai не загружена или функция img2txt недоступна.");
         }
 
-        // puter.ai.img2txt принимает изображение в виде DataURL
-        const rawText = await puter.ai.img2txt(imageDataURL);
+        // !!! ПОПЫТКА ИСПОЛЬЗОВАНИЯ ТОКЕНА !!!
+        // Предполагаем, что puter.ai.img2txt принимает токен в виде опции.
+        // Если это не сработает, вам потребуется бэкенд.
+        const options = {};
+        if (PUTER_AI_TOKEN && PUTER_AI_TOKEN !== "ВАШ_СЕКРЕТНЫЙ_ТОКЕН_API") {
+            // Это пример. Если puter.ai требует токен в другом формате,
+            // эту строку нужно будет изменить согласно их документации.
+            options.authToken = PUTER_AI_TOKEN;
+        }
+
+        const rawText = await puter.ai.img2txt({
+			source: imageDataURL,
+			provider: 'mistral',
+			model: 'mistral-ocr-latest',
+			includeImageBase64: true
+		});
 
         // Переходим к парсингу
         const { price, weight, unitPrice } = parseAndCalculate(rawText);
@@ -104,7 +122,7 @@ async function processImage(imageDataURL) {
 
     } catch (error) {
         console.error("Ошибка при обработке изображения или OCR:", error);
-        errorMessage.textContent = `Ошибка обработки: ${error.message}. Проверьте подключение к интернету и функциональность puter.ai.`;
+        errorMessage.textContent = `Ошибка обработки: ${error.message}. Проверьте подключение к интернету, токен API и функциональность puter.ai.`;
         errorMessage.style.display = 'block';
     } finally {
         loadingArea.style.display = 'none';

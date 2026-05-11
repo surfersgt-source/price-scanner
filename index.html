@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сканер Ценников</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <h1>Сканер Ценников</h1>
+
+        <div id="camera-area">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <button id="capture-button">📸 Сделать снимок</button>
+        </div>
+
+        <div id="result-area" style="display: none;">
+            <h2>Результаты анализа:</h2>
+            <p id="raw-text">Распознанный текст будет здесь...</p>
+            <div id="price-info">
+                <p>💰 Цена: <span id="price-value">--</span></p>
+                <p>⚖️ Вес: <span id="weight-value">--</span></p>
+                <h3>✅ Цена за 1 кг: <span id="unit-price">--</span></h3>
+            </div>
+            <button id="new-scan-button">Сделать новый снимок</button>
+        </div>
+
+        <div id="loading-area" style="display: none;">
+            <p>⏳ Обработка изображения и распознавание текста...</p>
+        </div>
+
+        <p id="error-message" class="error" style="display: none;"></p>
+    </div>
+
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="script.js"></script>
+</body>
+</html>

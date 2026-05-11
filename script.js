@@ -87,7 +87,7 @@ async function processImage(imageDataURL) {
     errorMessage.style.display = 'none';
 
     try {
-        // Используем puter.ai для OCR
+        /*// Используем puter.ai для OCR
         if (typeof puter === 'undefined' || typeof puter.ai === 'undefined' || typeof puter.ai.img2txt !== 'function') {
             throw new Error("Библиотека puter.ai не загружена или функция img2txt недоступна.");
         }
@@ -100,14 +100,15 @@ async function processImage(imageDataURL) {
             // Это пример. Если puter.ai требует токен в другом формате,
             // эту строку нужно будет изменить согласно их документации.
             options.authToken = PUTER_AI_TOKEN;
-        }
+        }*/
 
-        const rawText = await puter.ai.img2txt({
+        const rawText = await recognizeBase64(imageDataURL)
+		/*puter.ai.img2txt({
 			source: imageDataURL,
 			provider: 'mistral',
 			model: 'mistral-ocr-latest',
 			includeImageBase64: true
-		});
+		});*/
 
         // Переходим к парсингу
         const { price, weight, unitPrice } = parseAndCalculate(rawText);
@@ -129,6 +130,45 @@ async function processImage(imageDataURL) {
     }
 }
 
+async function recognizeBase64(base64String) {
+        
+        
+            //const base64String = reader.result; // Например: "data:image/png;base64,iVBORw0KGgo..."
+            const apiKey = 'helloworld';        // Бесплатный ключ-пример
+            const language = 'rus';             // Код для русского языка [citation:1][citation:7]
+
+            // Шаг 2: Готовим данные для POST-запроса
+            const formData = new FormData();
+            formData.append('base64Image', base64String);
+            formData.append('apikey', apiKey);
+            formData.append('language', language);
+
+            // Шаг 3: Отправляем POST-запрос на основной эндпоинт
+            const url = 'https://api.ocr.space/parse/image';
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                // Шаг 4: Обрабатываем результат
+                if (data.IsErroredOnProcessing) {
+                    
+                } else if (data.ParsedResults && data.ParsedResults.length > 0) {
+                    console.log(data.ParsedResults[0].ParsedText);
+					return data.ParsedResults[0].ParsedText;
+                } else {
+                    console.log('Текст не распознан.')//document.getElementById('result').innerText = 'Текст не распознан.';
+                }
+            } catch (error) {
+                console.log('Ошибка запроса: ' + error.message)//document.getElementById('result').innerText = 'Ошибка запроса: ' + error.message;
+            }
+        
+
+        
+    };
 // --- Логика Парсинга и Расчета ---
 
 /**

@@ -1,7 +1,6 @@
 // ===============================================
 // ! ВАЖНОЕ ПРИМЕЧАНИЕ ДЛЯ РАЗРАБОТЧИКА !
-// Теперь используется клиентская библиотека puter.ai для OCR.
-// Это устраняет необходимость в собственном бэкенд-прокси для распознавания текста.
+// Используется клиентская библиотека puter.ai для OCR.
 // ===============================================
 
 const video = document.getElementById('video');
@@ -23,6 +22,10 @@ async function startCamera() {
     try {
         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         video.srcObject = stream;
+
+        // Ожидаем, пока видеоэлемент будет готов к воспроизведению
+        await new Promise((resolve) => video.onloadedmetadata = resolve);
+
         video.play();
 
         // Сброс интерфейса
@@ -30,12 +33,18 @@ async function startCamera() {
         resultArea.style.display = 'none';
         loadingArea.style.display = 'none';
         errorMessage.style.display = 'none';
+
+        // Кнопка появляется только после того, как видео поток успешно запущен
+        captureButton.style.display = 'block';
         captureButton.disabled = false;
 
     } catch (err) {
         console.error("Ошибка доступа к камере: ", err);
         errorMessage.textContent = "Ошибка доступа к камере. Убедитесь, что разрешили доступ в браузере и что вы используете устройство с камерой.";
         errorMessage.style.display = 'block';
+
+        // Если камера не заработала, скрываем кнопку и делаем ее неактивной
+        captureButton.style.display = 'none';
         captureButton.disabled = true;
     }
 }
@@ -162,6 +171,7 @@ newScanButton.addEventListener('click', () => {
 
 // Запуск приложения при загрузке
 document.addEventListener('DOMContentLoaded', () => {
-    captureButton.disabled = true; // Отключаем до готовности камеры
+    // Кнопка скрыта изначально, пока камера не запустится
+    captureButton.style.display = 'none';
     startCamera();
 });

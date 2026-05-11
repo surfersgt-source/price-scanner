@@ -54,7 +54,7 @@ h1 {
     font-size: 1.1em;
     background-color: #28a745;
     color: white;
-    border: none;
+    border: 1px;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;

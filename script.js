@@ -34,8 +34,7 @@ async function startCamera() {
         loadingArea.style.display = 'none';
         errorMessage.style.display = 'none';
 
-        // Кнопка появляется только после того, как видео поток успешно запущен
-        captureButton.style.display = 'block';
+        // Кнопка становится активной, так как камера успешно запущена
         captureButton.disabled = false;
 
     } catch (err) {
@@ -43,8 +42,8 @@ async function startCamera() {
         errorMessage.textContent = "Ошибка доступа к камере. Убедитесь, что разрешили доступ в браузере и что вы используете устройство с камерой.";
         errorMessage.style.display = 'block';
 
-        // Если камера не заработала, скрываем кнопку и делаем ее неактивной
-        captureButton.style.display = 'none';
+        // Если камера не заработала, оставляем кнопку видимой, но неактивной
+        captureButton.style.display = 'block';
         captureButton.disabled = true;
     }
 }
@@ -171,7 +170,8 @@ newScanButton.addEventListener('click', () => {
 
 // Запуск приложения при загрузке
 document.addEventListener('DOMContentLoaded', () => {
-    // Кнопка скрыта изначально, пока камера не запустится
-    captureButton.style.display = 'none';
+    // Кнопка всегда видима при загрузке, но неактивна, пока камера не запустится
+    captureButton.style.display = 'block';
+    captureButton.disabled = true; // Изначально отключена
     startCamera();
 });
